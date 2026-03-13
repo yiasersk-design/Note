@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meta AI Note Maker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
      
     <script>
@@ -13,9 +13,10 @@
 // ==========================================
 
 const defaultChatHTML = `
-            <div class="flex justify-end w-full mt-2">
+    <div class="flex justify-end w-full mt-2">
         <div class="bg-[#f4f4f5] text-gray-900 px-4 py-2.5 rounded-[16px] rounded-tr-[4px] text-[15px] font-normal leading-relaxed max-w-[85%] w-fit inline-block break-words shadow-sm">Hi</div>
-    </div>    <div class="flex flex-col gap-3 w-full">
+    </div>
+    <div class="flex flex-col gap-3 w-full mt-2">
         <div class="text-[15px] text-gray-900 font-normal leading-[1.4] pl-1 cursor-text">
             Hi! আমাকে পেজ তৈরি করতে বলতে পারো, ডান দিকের আইকনে Template ব্যবহার করে স্ট্রাকচার বানাতে পারো অথবা মাঝখানের আইকনে ক্লিক করে Format এডিট করতে পারো!
         </div>
@@ -194,18 +195,20 @@ window.loadSession = function(id) {
     let previewTit = document.getElementById('previewTitle');
     let zoomWrap = document.getElementById('zoomHeaderWrapper');
 
-    if(createdPageData) {
-        if(paper) paper.classList.remove('hidden');
-        if(noPage) noPage.classList.add('hidden');
-        if(lockBtn) lockBtn.classList.remove('hidden');
-        if(zoomWrap) zoomWrap.classList.remove('hidden');
-        if(previewTit) previewTit.textContent = `${createdPageData.label} Preview`;
-    }
+            if(createdPageData) {
+            if(paper) paper.classList.remove('hidden');
+            if(noPage) noPage.classList.add('hidden');
+            if(lockBtn) lockBtn.classList.remove('hidden');
+            if(zoomWrap) zoomWrap.classList.remove('hidden');
+            if(previewTit) previewTit.textContent = `${createdPageData.label} Preview`;
+        }
 
-    updateSidebarList();
-    if(typeof closeSidebar === 'function') closeSidebar();
-};
-
+        updateSidebarList();
+        if(typeof closeSidebar === 'function') closeSidebar();
+        
+        // পুরনো চ্যাটে লং-প্রেস ইভেন্টগুলো পুনরায় অ্যাক্টিভ করা হচ্ছে
+        if(typeof rebindAllChatEvents === 'function') rebindAllChatEvents();
+    };
 // ==========================================
 // Sidebar Search Feature Logic
 // ==========================================
@@ -530,7 +533,8 @@ if (typeof window.originalProcessMessage === 'undefined') {
         window.originalProcessMessage();
     };
 }
-    </script>    <style>
+</script>
+    <style>
         /* প্রয়োজনীয় সব ফন্ট ইম্পোর্ট করা হলো */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Hind+Siliguri:wght@500;700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@400;700&family=Dancing+Script:wght@700&family=Tiro+Bangla&family=Anek+Bangla:wght@100;800&family=Galada&display=swap');        
         body {
@@ -624,14 +628,30 @@ if (typeof window.originalProcessMessage === 'undefined') {
                 </div>
             </div>
             <div class="flex items-center gap-2">
+                
+                <div class="relative">
+                    <button onclick="toggleSaveMenu(event)" class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 hover:bg-green-100 transition-colors focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    </button>
+                    <div id="topSaveMenu" class="hidden absolute top-12 right-0 w-44 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-50 transition-all origin-top-right fade-in">
+                        <button onclick="openSaveImageModal()" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[15px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none">
+                            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            Save as Image
+                        </button>
+                        <button onclick="openSavePdfModal()" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[15px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none border-t border-gray-50">
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            Save as PDF
+                        </button>
+                    </div>
+                </div>
+
                 <button onclick="createNewSession()" class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 hover:bg-blue-100 transition-colors focus:outline-none">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
 </button>
                 <div class="relative">
                     <button onclick="toggleThreeDotMenu(event)" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors focus:outline-none">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg>
-                    </button>
-                    <div id="threeDotMenu" class="hidden absolute top-12 right-0 w-44 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-50 transition-all origin-top-right fade-in">
+                    </button>                    <div id="threeDotMenu" class="hidden absolute top-12 right-0 w-44 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-50 transition-all origin-top-right fade-in">
                         <button onclick="renameCurrentNote()" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[15px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                             Rename
@@ -694,12 +714,11 @@ if (typeof window.originalProcessMessage === 'undefined') {
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                             </button>
                             <!-- Plus Menu Options -->
-                            <div id="plusMenu" class="hidden absolute bottom-[50px] left-0 mb-2 w-48 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-50 transition-all origin-bottom-left fade-in">
+                                                 <div id="plusMenu" class="hidden absolute bottom-[50px] left-0 mb-2 w-48 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-50 transition-all origin-bottom-left fade-in">
                                 <button id="makeNoteBtn" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[16px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none">
                                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                     Make Q&A Note
                                 </button>
-                                <!-- Aspect Ratio Option -->
                                 <button id="aspectRatioMenuBtn" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[16px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none border-t border-gray-50">
                                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="18" height="14" x="3" y="5" rx="2" ry="2"/><path d="M3 12h18"/></svg>
                                     Aspect Ratio
@@ -707,6 +726,10 @@ if (typeof window.originalProcessMessage === 'undefined') {
                                 <button id="pageMarginMenuBtn" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[16px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none border-t border-gray-50">
                                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M8 3v18"/><path d="M16 3v18"/><path d="M3 8h18"/><path d="M3 16h18"/></svg>
                                     Page Margin
+                                </button>
+                                <button id="editByNumMenuBtn" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[16px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none border-t border-gray-50">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    Edit by Number
                                 </button>
                             </div>
                         </div>
@@ -842,36 +865,46 @@ if (typeof window.originalProcessMessage === 'undefined') {
                 </div>
             </div>
 
-            <div class="flex-none bg-[#f8f9fa] w-full h-[120px] border-t border-gray-300 flex items-center px-4 gap-4 overflow-x-auto hide-scrollbar z-40">
+                        <div class="flex-none bg-[#f8f9fa] w-full h-[100px] border-t border-gray-300 flex items-center px-4 gap-3 overflow-x-auto hide-scrollbar z-40">
                 
                 <div class="flex flex-col items-center justify-center min-w-[80px] cursor-pointer hover:opacity-80 transition-opacity">
                     <svg viewBox="0 0 24 24" fill="currentColor" class="w-[42px] h-[42px] text-[#7a7a7a] mb-1">
                         <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-3 8H7v-2h10v2z" opacity="0.3"/>
                         <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
                     </svg>
-                    <span class="text-[14px] text-[#8a8a8a] font-normal">my projects</span>
+                    <span class="text-[14px] text-[#8a8a8a] font-normal">Formats</span>
                 </div>
 
                 <div class="h-14 w-[1px] bg-gray-300 flex-shrink-0 mx-1"></div>
 
-                <div class="w-[85px] h-[85px] min-w-[85px] rounded-[3px] bg-gradient-to-br from-[#85a894] to-[#3a5851] flex items-center justify-center cursor-pointer shadow-sm relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-white/10 hidden group-hover:block transition-all"></div>
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20"></div>
-                    <span class="text-white text-[18px] font-light tracking-wide relative z-10">Default</span>
+                <div onclick="applyQAFormat('none')" class="w-[85px] h-[85px] min-w-[85px] rounded-[8px] bg-[#f8fafc] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer shadow-sm hover:bg-gray-100 transition-colors">
+                    <span class="text-gray-500 font-medium text-[14px]">None</span>
                 </div>
 
-                <div class="w-[85px] h-[85px] min-w-[85px] rounded-[3px] bg-gray-800 flex items-center justify-center cursor-pointer shadow-sm relative overflow-hidden group" style="background-image: url('https://images.unsplash.com/photo-1544265785-5b12851411ce?q=80&w=200&auto=format&fit=crop'); background-size: cover; background-position: center;">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all"></div>
-                    <div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, #fff 5px, #fff 10px);"></div>
-                    <span class="text-white text-[24px] font-thin tracking-widest relative z-10">THIN</span>
+                <div onclick="applyQAFormat('english_q_a')" class="w-[85px] h-[85px] min-w-[85px] rounded-[8px] bg-gray-900 border border-gray-800 flex flex-col items-start justify-center cursor-pointer shadow-sm p-3 hover:opacity-90 transition-opacity">
+                    <span class="text-white font-bold text-[14px] mb-1.5">Q: ...</span>
+                    <span class="text-gray-300 font-medium text-[13px]">A: ...</span>
                 </div>
 
-                <div class="w-[85px] h-[85px] min-w-[85px] rounded-[3px] bg-[#1a1f2b] flex items-center justify-center cursor-pointer shadow-sm relative overflow-hidden group">
-                    <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, #fff 2px, #fff 3px);"></div>
-                    <div class="absolute inset-0 bg-white/5 hidden group-hover:block transition-all"></div>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#e6cda3] via-[#e2a8b9] to-[#b59fd6] text-[24px] font-thin tracking-widest relative z-10">THIN</span>
+                <div onclick="applyQAFormat('bengali_word')" class="w-[85px] h-[85px] min-w-[85px] rounded-[8px] bg-white border border-gray-200 flex flex-col items-start justify-center cursor-pointer shadow-sm p-3 hover:border-blue-400 hover:shadow-md transition-all">
+                    <span class="text-gray-800 font-bold text-[13px] mb-1.5">প্রশ্ন: ...</span>
+                    <span class="text-gray-600 font-medium text-[12px]">উত্তর: ...</span>
                 </div>
-                
+
+                <div onclick="applyQAFormat('numeric_ans')" class="w-[85px] h-[85px] min-w-[85px] rounded-[8px] bg-[#eff6ff] border border-blue-200 flex flex-col items-start justify-center cursor-pointer shadow-sm p-3 hover:border-blue-400 transition-colors">
+                    <span class="text-blue-900 font-bold text-[14px] mb-1.5">1. ...</span>
+                    <span class="text-blue-700 font-medium text-[13px]">Ans: ...</span>
+                </div>
+
+                <div onclick="applyQAFormat('roman_bengali')" class="w-[85px] h-[85px] min-w-[85px] rounded-[8px] bg-[#fffbeb] border border-amber-200 flex flex-col items-start justify-center cursor-pointer shadow-sm p-3 hover:border-amber-400 transition-colors">
+                    <span class="text-amber-900 font-bold text-[14px] mb-1.5">(i) ...</span>
+                    <span class="text-amber-700 font-medium text-[13px]">উঃ ...</span>
+                </div>
+
+                <div onclick="applyQAFormat('q_numeric')" class="w-[85px] h-[85px] min-w-[85px] rounded-[8px] bg-[#faf5ff] border border-purple-200 flex flex-col items-start justify-center cursor-pointer shadow-sm p-3 hover:border-purple-400 transition-colors">
+                    <span class="text-purple-900 font-bold text-[14px] mb-1.5">Q1. ...</span>
+                    <span class="text-purple-700 font-medium text-[13px]">Ans: ...</span>
+                </div>
             </div>
         </div>
 
@@ -1179,9 +1212,9 @@ if (typeof window.originalProcessMessage === 'undefined') {
 <div id="sidebarMenu" class="absolute top-0 left-0 w-[280px] h-full bg-white z-[80] transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
     <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            </div>
+            <div class="w-8 h-8 rounded-full flex items-center justify-center shadow-sm ring-2 ring-gray-100 overflow-hidden bg-black">
+    <video src="https://raw.githubusercontent.com/yiasersk-design/Logo-/main/bob_luo.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+</div>
             <span class="text-[18px] font-bold text-gray-800">Meta AI</span>
         </div>
         <button id="closeSidebarBtn" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300 transition-colors focus:outline-none">
@@ -2108,11 +2141,13 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
         // --- Yes / No Button Logic ---
         function appendYesNoButtons() {
             const btnWrapper = document.createElement('div');
-            btnWrapper.className = 'flex gap-2 pl-1 mt-1 mb-2 fade-in';
+            // 'justify-center' এবং 'w-full' যোগ করা হয়েছে বাটনগুলোকে মাঝখানে আনার জন্য এবং 'pl-1' রিমুভ করা হয়েছে
+            btnWrapper.className = 'flex justify-center w-full gap-2 mt-2 mb-3 fade-in';
             btnWrapper.id = 'yesNoBtnWrapper';
 
             // Yes Button
             const yesBtn = document.createElement('button');
+
             // এজ (Edge) বা বর্ডার রেডিয়াস কমিয়ে rounded-lg এবং সাইজ ছোট (px-4 py-1 text-[14px]) করা হলো
             yesBtn.className = 'px-4 py-1 bg-[#e0f2fe] text-[#0284c7] border border-[#bae6fd] rounded-lg text-[14px] font-medium hover:bg-[#bae6fd] transition-colors focus:outline-none';
             yesBtn.textContent = 'Yes';
@@ -2165,7 +2200,7 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
             return null;
         }
 
-        function getAspectRatioStyle(pageData) {
+         function getAspectRatioStyle(pageData) {
             if (pageData.type === 'dimension' || pageData.type === 'ratio') return `${pageData.w} / ${pageData.h}`;
             if (pageData.type === 'standard') {
                 const sizes = { 'A4': '210 / 297', 'A3': '297 / 420', 'A5': '148 / 210', 'LETTER': '8.5 / 11', 'LEGAL': '8.5 / 14' };
@@ -2173,6 +2208,15 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
             }
             return '1 / 1';
         }
+
+        // --- Q&A Format Apply Function ---
+        window.applyQAFormat = function(format) {
+            userStyles.qaFormat = format; // ইউজারের পছন্দ করা ফরম্যাট সেভ করা হলো
+            testFitAndRender(); // পেজ রিলোড করা হলো
+            if (typeof window.saveCurrentSession === 'function') {
+                window.saveCurrentSession(); // ডেটাবেসে সেভ করা হলো
+            }
+        };
 
         function testFitAndRender() {
             // ১. স্পেস ক্যালকুলেশনের আগে ওভারলে এবং পেজকে রিয়েল-টাইমে ভিজিবল করা হচ্ছে (যাতে Height 0 না হয়)
@@ -2272,21 +2316,54 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
             let fontWtA = userStyles.isBold ? '700' : '400';
 
             innerWrapper.className = "flex flex-col w-full m-auto transition-all duration-200";
+            
+            // নাম্বারিং ট্র‍্যাক করার জন্য কাউন্টার তৈরি করা হলো
+            let qaCounter = 0;
 
             contentList.forEach((item, index) => {
                 let commonStyles = `margin-bottom: ${userStyles.paraSpacing}px; text-align: ${userStyles.textAlign}; ${userStyles.textAlign === 'justify' ? 'text-justify: inter-word;' : ''} font-family: ${userStyles.fontFamily}; color: ${userStyles.textColor}; line-height: ${userStyles.lineHeight}; letter-spacing: ${userStyles.letterSpacing}px;`;
+                
                 if (item.type === 'qa') {
-                    let prefix = (userStyles.listType === 'none') ? `Q: ` : '';
+                    qaCounter++; // প্রশ্ন পেলেই কাউন্টার বাড়বে
+                    
+                    let currentQAFormat = userStyles.qaFormat || 'english_q_a'; // ডিফল্ট 'Q: / A:' রাখা হলো
+                    let qPrefix = '';
+                    let aPrefix = '';
+
+                    // ইউজার যে টেমপ্লেট বেছে নেবে সেই অনুযায়ী Prefix সেট হবে
+                    if (currentQAFormat === 'none') {
+                        qPrefix = '';
+                        aPrefix = '';
+                    } else if (currentQAFormat === 'bengali_word') {
+                        qPrefix = 'প্রশ্ন: ';
+                        aPrefix = 'উত্তর: ';
+                    } else if (currentQAFormat === 'english_q_a') {
+                        qPrefix = 'Q: ';
+                        aPrefix = 'A: ';
+                    } else if (currentQAFormat === 'numeric_ans') {
+                        qPrefix = `${qaCounter}. `;
+                        aPrefix = 'Ans: ';
+                    } else if (currentQAFormat === 'roman_bengali') {
+                        const roman = ["", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx"];
+                        let rNum = roman[qaCounter] || qaCounter; // ২০ এর বেশি হলে নরমাল নাম্বার দেখাবে
+                        qPrefix = `(${rNum}) `;
+                        aPrefix = 'উঃ ';
+                    } else if (currentQAFormat === 'q_numeric') {
+                        qPrefix = `Q${qaCounter}. `;
+                        aPrefix = 'Ans: ';
+                    }
+                    
                     let displayType = userStyles.listType === 'none' ? 'block' : 'list-item';
                     let listMargin = userStyles.listType !== 'none' ? 'margin-left: 20px;' : '';
                     let listClass = userStyles.listType === 'bullet' ? 'list-disc' : (userStyles.listType === 'number' ? 'list-decimal' : 'list-none');
 
                                         html += `
                                                 <div class="note-pair w-full ${listClass}" style="${commonStyles} ${listMargin} display: ${displayType};">
-                            <div class="q-text" style="font-weight: ${fontWtQ}; font-style: ${fontSty}; text-decoration: ${textDeco}; transition: font-size 0.2s; line-height: ${userStyles.qaLineHeight || 1.35};">                                ${prefix}${item.q}
+                            <div class="q-text" style="font-weight: ${fontWtQ}; font-style: ${fontSty}; text-decoration: ${textDeco}; transition: font-size 0.2s; line-height: ${userStyles.qaLineHeight || 1.35};">
+                                <span style="font-weight: bold; opacity: 0.9;">${qPrefix}</span>${item.q}
                             </div>
                             <div class="a-text" style="font-weight: ${fontWtA}; font-style: ${fontSty}; text-decoration: ${textDeco}; transition: font-size 0.2s; margin-top: 1px; line-height: ${userStyles.qaLineHeight || 1.35};">
-                                ${item.a}
+                                <span style="font-weight: bold; opacity: 0.9;">${aPrefix}</span>${item.a}
                             </div>
                         </div>
                     `;
@@ -2313,7 +2390,7 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
                     // Text Copy ও Selection বন্ধ করার জন্য CSS (user-select: none এবং -webkit-touch-callout: none) যোগ করা হলো
                     html += `<div class="${wrapperClass} stylish-wrapper" data-index="${index}" style="${commonStyles} text-align: center; ${posStyle} user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
                                 <div class="${innerStyle}">
-                                    <span class="${item.styleClass} stylish-text text-center leading-tight mx-auto block pb-2 cursor-move" style="transition: font-size 0.2s; pointer-events: auto;">${item.text}</span>
+                                    <span class="${item.styleClass} stylish-text text-center leading-tight mx-auto block pt-4 pb-2 cursor-move" style="transition: font-size 0.2s; pointer-events: auto;">${item.text}</span>
                                 </div>
                              </div>`;
                 }            });
@@ -2765,16 +2842,20 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
             let pressTimer;
             let isDragging = false;
 
-            const startPress = (e) => {
+                        const startPress = (e) => {
                 isDragging = false;
                 if (e.touches && e.touches.length > 1) return; // মাল্টি-টাচ ইগনোর
                 
+                // ইভেন্ট ফায়ার হওয়ার সাথে সাথেই পজিশন সেভ করে নেওয়া হচ্ছে
+                let startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                let startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+
                 // লং প্রেস বোঝার জন্য সাময়িকভাবে ব্যাকগ্রাউন্ড একটু ডার্ক হবে
                 msgBubble.classList.replace('bg-[#f4f4f5]', 'bg-[#e4e4e7]');
 
                 pressTimer = setTimeout(() => {
                     if (!isDragging) {
-                        showContextMenu(e, msgBubble);
+                        showContextMenu(startX, startY, msgBubble);
                     }
                     msgBubble.classList.replace('bg-[#e4e4e7]', 'bg-[#f4f4f5]');
                 }, 600); // ৬০০ms হোল্ড করলে মেনু খুলবে
@@ -2807,15 +2888,15 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
                         function appendAIMessage(text) {
             const aiWrapper = document.createElement('div'); aiWrapper.className = 'flex flex-col gap-1.5 w-full mt-4 fade-in';
             
-            // --- NEW: AI Profile Avatar ---
-            const profileBlock = document.createElement('div');
-            profileBlock.className = 'flex items-center gap-2 pl-1 mb-1';
-            profileBlock.innerHTML = `
-                <div class="w-[26px] h-[26px] rounded-full bg-gradient-to-tr from-blue-600 to-purple-500 flex items-center justify-center text-white shadow-sm ring-2 ring-white">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                </div>
-                <span class="text-[13px] font-bold text-gray-800 tracking-wide">Meta AI</span>
-            `;
+            // --- NEW: AI Profile Avatar (Video Update) ---
+const profileBlock = document.createElement('div');
+profileBlock.className = 'flex items-center gap-2 pl-1 mb-1';
+profileBlock.innerHTML = `
+    <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center shadow-sm ring-2 ring-white overflow-hidden bg-black">
+        <video src="https://raw.githubusercontent.com/yiasersk-design/Logo-/main/bob_luo.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+    </div>
+    <span class="text-[13px] font-bold text-gray-800 tracking-wide">Meta AI</span>
+`;
 
             // লেখার প্যাডিং বাড়ানো হয়েছে (pl-9) যাতে অ্যাভাটারের সোজা নিচে থাকে
             const textBlock = document.createElement('div'); textBlock.className = 'text-[15px] text-gray-900 font-normal leading-[1.4] pl-9 cursor-text'; 
@@ -3023,28 +3104,37 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
                 let pressTimer;
                 let isDragging = false;
 
+                // ডুপ্লিকেট ইভেন্ট বন্ধ করার জন্য নোডটি ক্লোন করে শুরুতেই রিপ্লেস করা হলো
+                let newBubble = msgBubble.cloneNode(true);
+                msgBubble.parentNode.replaceChild(newBubble, msgBubble);
+
                 const startPress = (e) => {
                     isDragging = false;
                     if (e.touches && e.touches.length > 1) return;
-                    msgBubble.classList.replace('bg-[#f4f4f5]', 'bg-[#e4e4e7]');
+                    
+                    let startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                    let startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+                    
+                    // এখানে msgBubble এর বদলে newBubble ব্যবহার করা হয়েছে
+                    newBubble.classList.replace('bg-[#f4f4f5]', 'bg-[#e4e4e7]');
                     pressTimer = setTimeout(() => {
-                        if (!isDragging) showContextMenu(e, msgBubble);
-                        msgBubble.classList.replace('bg-[#e4e4e7]', 'bg-[#f4f4f5]');
+                        if (!isDragging) showContextMenu(startX, startY, newBubble);
+                        newBubble.classList.replace('bg-[#e4e4e7]', 'bg-[#f4f4f5]');
                     }, 600);
                 };
 
                 const cancelPress = () => { 
                     clearTimeout(pressTimer); 
-                    msgBubble.classList.replace('bg-[#e4e4e7]', 'bg-[#f4f4f5]');
+                    newBubble.classList.replace('bg-[#e4e4e7]', 'bg-[#f4f4f5]');
                 };
 
-                msgBubble.addEventListener('mousedown', startPress);
-                msgBubble.addEventListener('touchstart', startPress, {passive: true});
-                msgBubble.addEventListener('mouseup', cancelPress);
-                msgBubble.addEventListener('mouseleave', cancelPress);
-                msgBubble.addEventListener('touchend', cancelPress);
-                msgBubble.addEventListener('touchmove', () => { isDragging = true; cancelPress(); }, {passive: true});
-                msgBubble.oncontextmenu = (e) => { e.preventDefault(); return false; };
+                newBubble.addEventListener('mousedown', startPress);
+                newBubble.addEventListener('touchstart', startPress, {passive: true});
+                newBubble.addEventListener('mouseup', cancelPress);
+                newBubble.addEventListener('mouseleave', cancelPress);
+                newBubble.addEventListener('touchend', cancelPress);
+                newBubble.addEventListener('touchmove', () => { isDragging = true; cancelPress(); }, {passive: true});
+                newBubble.oncontextmenu = (e) => { e.preventDefault(); return false; };
             });
         }
 
@@ -3253,7 +3343,7 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
 
         </script>
 
-                <div id="sidebarContextMenu" class="hidden fixed bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-xl border border-gray-100 z-[100] overflow-hidden min-w-[160px] transform transition-all">
+                        <div id="sidebarContextMenu" class="hidden fixed bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-xl border border-gray-100 z-[100] overflow-hidden min-w-[160px] transform transition-all">
             <button onclick="renameSidebarNote()" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[15px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none">
                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 Rename
@@ -3266,151 +3356,35 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
                 <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 Delete
             </button>
-        </div> <div id="msgContextMenu" class="hidden fixed bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-xl border border-gray-100 z-[90] overflow-hidden min-w-[160px] transform transition-all">
+        </div>
+
+        <div id="msgContextMenu" class="hidden fixed bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-xl border border-gray-100 z-[90] overflow-hidden min-w-[160px] transform transition-all">
             <button id="editMsgBtn" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[15px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none">
                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 Edit Message
             </button>
+            <button id="copyMsgBtn" class="w-full text-left px-4 py-3 hover:bg-gray-50 text-[15px] font-medium text-gray-800 flex items-center gap-3 focus:outline-none border-t border-gray-50">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Message
+            </button>
         </div>
 
-              <div id="editMsgModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
-            <div class="bg-white rounded-lg w-full max-w-[340px] shadow-2xl overflow-hidden flex flex-col">
+        <div id="editMsgModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
+            <div class="bg-white rounded-xl w-full max-w-[340px] shadow-2xl overflow-hidden flex flex-col">
                 <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h3 class="font-bold text-gray-800 text-[16px]">Edit Message</h3>
                 </div>
                 <div class="p-4 flex flex-col gap-3">
-                    <textarea id="editMsgInput" class="w-full border border-gray-200 rounded-md p-3 min-h-[160px] text-[16px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-                    <div class="flex justify-end gap-2 mt-1">
-                        <button id="cancelEditBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-700 font-medium text-[14px] transition-colors">Cancel</button>
-                        <button id="saveEditBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-medium text-[14px] shadow-lg shadow-blue-600/30 transition-colors">Update</button>
+                    <textarea id="editMsgInput" class="w-full border border-gray-200 rounded-lg p-3 min-h-[160px] text-[16px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    <div class="flex justify-end gap-2 mt-2">
+                        <button id="cancelEditBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium text-[14px] transition-colors">Cancel</button>
+                        <button id="saveEditBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium text-[14px] shadow-lg shadow-blue-600/30 transition-colors">Update</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script>
-        // ==========================================
-        // Long Press Edit Message System (JS Logic & AI Event Detect)
-        // ==========================================
-        const msgContextMenu = document.getElementById('msgContextMenu');
-        const editMsgModal = document.getElementById('editMsgModal');
-        const editMsgInput = document.getElementById('editMsgInput');
-        
-        let currentEditBubble = null;
-        let currentEditText = "";
-
-        function showContextMenu(e, bubble) {
-            currentEditBubble = bubble;
-            // dataset থেকে rawText নেওয়া হচ্ছে যাতে এডিট করার সময় স্টার/আন্ডারস্কোর থাকে
-            currentEditText = bubble.dataset.rawText || bubble.textContent; 
-
-            // টাচ বা ক্লিকের পজিশন বের করা
-            let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-            let clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-
-            msgContextMenu.classList.remove('hidden');
-            
-            // স্ক্রিনের বাইরে যেন মেনু না যায় তার ক্যালকুলেশন
-            let menuWidth = msgContextMenu.offsetWidth || 160;
-            let menuHeight = msgContextMenu.offsetHeight || 50;
-            
-            let leftPos = clientX;
-            let topPos = clientY;
-
-            if (leftPos + menuWidth > window.innerWidth) leftPos = window.innerWidth - menuWidth - 10;
-            if (topPos + menuHeight > window.innerHeight) topPos = window.innerHeight - menuHeight - 10;
-
-            msgContextMenu.style.left = `${leftPos}px`;
-            msgContextMenu.style.top = `${topPos}px`;
-        }
-
-        // বাইরে ক্লিক করলে মেনু বন্ধ করা
-        document.addEventListener('mousedown', (e) => {
-            if (!msgContextMenu.contains(e.target)) msgContextMenu.classList.add('hidden');
-        });
-        document.addEventListener('touchstart', (e) => {
-            if (!msgContextMenu.contains(e.target)) msgContextMenu.classList.add('hidden');
-        });
-
-        // Edit অপশনে ক্লিক
-        document.getElementById('editMsgBtn').addEventListener('click', () => {
-            msgContextMenu.classList.add('hidden');
-            editMsgInput.value = currentEditText;
-            editMsgModal.classList.remove('hidden');
-            setTimeout(() => { editMsgInput.focus(); }, 100);
-        });
-
-        // Cancel বাটন
-        document.getElementById('cancelEditBtn').addEventListener('click', () => {
-            editMsgModal.classList.add('hidden');
-        });
-
-        // Update বাটন (Updated Logic for Contextual AI Reply)
-        document.getElementById('saveEditBtn').addEventListener('click', () => {
-            const newText = editMsgInput.value.trim();
-            if (!newText || newText === currentEditText) {
-                editMsgModal.classList.add('hidden');
-                return;
-            }
-
-            // Undo-এর জন্য অ্যাকশন সেভ (আগের অ্যাড করা Undo ফাংশনের জন্য)
-            if (typeof saveToUndoStack === 'function') {
-                saveToUndoStack();
-            }
-
-            let responseText = "";
-
-            // ১. যদি মেসেজটি এখনো contentList-এ যোগ না হয়ে থাকে (AI উত্তরের অপেক্ষায় থাকে)
-            if (isNoteModeActive && (pendingQ === currentEditText || pendingA === currentEditText)) {
-                let isNewTextQ = detectQuestion(newText);
-                let msgPrefix = "তুমি আগের উত্তর বা প্রশ্ন edit করে আবার পাঠিয়েছো। ";
-                
-                // নতুন টেক্সটটি কি প্রশ্ন নাকি উত্তর তা ডিটেক্ট করা হচ্ছে
-                if (isNewTextQ) {
-                    pendingQ = newText;
-                    if (pendingA === currentEditText) pendingA = ""; // যদি উত্তরটি এডিট করে প্রশ্নে পরিণত করা হয়
-                    responseText = msgPrefix + "আমি তোমার প্রশ্নটি পেয়েছি, এবার তুমি আমাকে এর উত্তর পাঠাও।";
-                } else {
-                    pendingA = newText;
-                    if (pendingQ === currentEditText) pendingQ = ""; // যদি প্রশ্নটি এডিট করে উত্তরে পরিণত করা হয়
-                    responseText = msgPrefix + "আমি তোমার উত্তরটি পেয়েছি, এবার তুমি আমাকে প্রশ্নটি পাঠাও।";
-                }
-            } else {
-                // ২. contentList-এর ভেতর থেকে পুরনো টেক্সট খুঁজে নতুন টেক্সট দিয়ে রিপ্লেস করা
-                let isReplaced = false;
-                contentList.forEach(item => {
-                    if (item.type === 'qa') {
-                        if (item.q === currentEditText) { item.q = newText; isReplaced = true; }
-                        if (item.a === currentEditText) { item.a = newText; isReplaced = true; }
-                    } else {
-                        if (item.text === currentEditText) { item.text = newText; isReplaced = true; }
-                    }
-                });
-                
-                if (isReplaced) {
-                    responseText = "তুমি আগের নোটের কনটেন্ট edit করেছো এবং পেজে সেটি আপডেট করা হয়েছে।";
-                } else {
-                    responseText = "আপনার মেসেজটি আপডেট করা হয়েছে।";
-                }
-            }
-
-            // ৩. চ্যাটের বাবল আপডেট করা
-            currentEditBubble.dataset.rawText = newText;
-            currentEditBubble.innerHTML = formatChatText(newText);
-            
-            // ৪. মডেল বন্ধ করে পেজ রিফ্রেশ করা
-            editMsgModal.classList.add('hidden');
-            testFitAndRender(); // পেজে নতুন লেখা রেন্ডার হবে
-
-            // ৫. AI এর ডাইনামিক রিপ্লাই জেনারেট করা
-            appendAIMessage(responseText);
-            
-            if (typeof window.saveCurrentSession === 'function') {
-                window.saveCurrentSession();
-            }
-        });
-        </script>
-                <div id="renameModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
+               <div id="renameModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
             <div class="bg-white rounded-md w-full max-w-[320px] shadow-2xl overflow-hidden flex flex-col">
                 <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h3 class="font-bold text-gray-800 text-[16px]">Rename Note</h3>
@@ -3423,5 +3397,460 @@ sidebarOverlay.addEventListener('click', closeSidebar); // ওভারলে-�
                     </div>
                 </div>
             </div>
-        </div></script>
-        </html>
+        </div>
+
+        <div id="editByNumModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
+            <div class="bg-white rounded-xl w-full max-w-[340px] shadow-2xl overflow-hidden flex flex-col">
+                <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h3 class="font-bold text-gray-800 text-[16px]">Edit Note by Number</h3>
+                </div>
+                <div class="p-4 flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <label class="text-[15px] text-gray-700 font-medium whitespace-nowrap">Q&A Number:</label>
+                        <input type="number" id="editNumInput" class="w-20 border border-gray-300 rounded-lg p-2 text-center text-[15px] focus:ring-2 focus:ring-blue-500 outline-none" min="1" placeholder="Ex: 1">
+                    </div>
+                    <div class="flex gap-5 items-center bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="editQAType" value="q" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                            <span class="text-[15px] text-gray-800 font-medium">Question</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="editQAType" value="a" class="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                            <span class="text-[15px] text-gray-800 font-medium">Answer</span>
+                        </label>
+                    </div>
+                    <textarea id="editNumTextInput" class="w-full border border-gray-200 rounded-lg p-3 min-h-[140px] text-[15px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Enter updated text here..."></textarea>
+                    <span id="editNumErrorMsg" class="text-red-500 text-[13px] font-medium hidden">⚠️ Q&A number not found!</span>
+                    <div class="flex justify-end gap-2 mt-1">
+                        <button id="cancelEditNumBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium text-[14px] transition-colors">Cancel</button>
+                        <button id="saveEditNumBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium text-[14px] shadow-lg shadow-blue-600/30 transition-colors">Update Note</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        // ==========================================
+        // Safe JavaScript Section for Modals & Edits
+        // ==========================================
+
+        // --- Long Press Edit Message System ---
+        const msgContextMenu = document.getElementById('msgContextMenu');
+        const editMsgModal = document.getElementById('editMsgModal');
+        const editMsgInput = document.getElementById('editMsgInput');
+        
+        let currentEditBubble = null;
+        let currentEditText = "";
+
+        function showContextMenu(clientX, clientY, bubble) {
+            currentEditBubble = bubble;
+            currentEditText = bubble.dataset.rawText || bubble.textContent; 
+
+            if (msgContextMenu) {
+                msgContextMenu.classList.remove('hidden');
+                
+                let menuWidth = msgContextMenu.offsetWidth || 160;
+                let menuHeight = msgContextMenu.offsetHeight || 90;
+                
+                let leftPos = clientX;
+                let topPos = clientY;
+
+                if (leftPos + menuWidth > window.innerWidth) leftPos = window.innerWidth - menuWidth - 10;
+                if (topPos + menuHeight > window.innerHeight) topPos = window.innerHeight - menuHeight - 10;
+
+                msgContextMenu.style.left = `${leftPos}px`;
+                msgContextMenu.style.top = `${topPos}px`;
+            }
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if (msgContextMenu && !msgContextMenu.contains(e.target)) msgContextMenu.classList.add('hidden');
+        });
+        document.addEventListener('touchstart', (e) => {
+            if (msgContextMenu && !msgContextMenu.contains(e.target)) msgContextMenu.classList.add('hidden');
+        });
+
+        const editMsgBtn = document.getElementById('editMsgBtn');
+        if (editMsgBtn) {
+            editMsgBtn.addEventListener('click', () => {
+                if(msgContextMenu) msgContextMenu.classList.add('hidden');
+                if (editMsgInput) {
+                    editMsgInput.value = currentEditText;
+                    if(editMsgModal) editMsgModal.classList.remove('hidden');
+                    setTimeout(() => { editMsgInput.focus(); }, 100);
+                }
+            });
+        }
+
+        const copyMsgBtn = document.getElementById('copyMsgBtn');
+        if (copyMsgBtn) {
+            copyMsgBtn.addEventListener('click', () => {
+                if(msgContextMenu) msgContextMenu.classList.add('hidden');
+                navigator.clipboard.writeText(currentEditText).then(() => {
+                    if (window.showToast) window.showToast('Message copied!', 'success');
+                }).catch(err => console.error("Failed to copy:", err));
+            });
+        }
+
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', () => {
+                if(editMsgModal) editMsgModal.classList.add('hidden');
+            });
+        }
+
+        const saveEditBtn = document.getElementById('saveEditBtn');
+        if (saveEditBtn) {
+            saveEditBtn.addEventListener('click', () => {
+                if(!editMsgInput) return;
+                const newText = editMsgInput.value.trim();
+                if (!newText || newText === currentEditText) {
+                    if(editMsgModal) editMsgModal.classList.add('hidden');
+                    return;
+                }
+
+                if (typeof saveToUndoStack === 'function') saveToUndoStack();
+
+                let responseText = "";
+                if (isNoteModeActive && (pendingQ === currentEditText || pendingA === currentEditText)) {
+                    let isNewTextQ = detectQuestion(newText);
+                    let msgPrefix = "তুমি আগের উত্তর বা প্রশ্ন edit করে আবার পাঠিয়েছো। ";
+                    
+                    if (isNewTextQ) {
+                        pendingQ = newText;
+                        if (pendingA === currentEditText) pendingA = ""; 
+                        responseText = msgPrefix + "আমি তোমার প্রশ্নটি পেয়েছি, এবার তুমি আমাকে এর উত্তর পাঠাও।";
+                    } else {
+                        pendingA = newText;
+                        if (pendingQ === currentEditText) pendingQ = ""; 
+                        responseText = msgPrefix + "আমি তোমার উত্তরটি পেয়েছি, এবার তুমি আমাকে প্রশ্নটি পাঠাও।";
+                    }
+                } else {
+                    let isReplaced = false;
+                    contentList.forEach(item => {
+                        if (item.type === 'qa') {
+                            if (item.q === currentEditText) { item.q = newText; isReplaced = true; }
+                            if (item.a === currentEditText) { item.a = newText; isReplaced = true; }
+                        } else {
+                            if (item.text === currentEditText) { item.text = newText; isReplaced = true; }
+                        }
+                    });
+                    
+                    responseText = isReplaced ? "তুমি আগের নোটের কনটেন্ট edit করেছো এবং পেজে সেটি আপডেট করা হয়েছে।" : "আপনার মেসেজটি আপডেট করা হয়েছে।";
+                }
+
+                if(currentEditBubble) {
+                    currentEditBubble.dataset.rawText = newText;
+                    currentEditBubble.innerHTML = formatChatText(newText);
+                }
+                
+                if(editMsgModal) editMsgModal.classList.add('hidden');
+                if (typeof testFitAndRender === 'function') testFitAndRender(); 
+                if (typeof appendAIMessage === 'function') appendAIMessage(responseText);
+                
+                if (typeof window.saveCurrentSession === 'function') window.saveCurrentSession();
+            });
+        }
+
+        // --- Edit by Number System Logic ---
+        const editByNumMenuBtn = document.getElementById('editByNumMenuBtn');
+        const editByNumModal = document.getElementById('editByNumModal');
+        const editNumInput = document.getElementById('editNumInput');
+        const editNumTextInput = document.getElementById('editNumTextInput');
+        const editNumErrorMsg = document.getElementById('editNumErrorMsg');
+        const cancelEditNumBtn = document.getElementById('cancelEditNumBtn');
+        const saveEditNumBtn = document.getElementById('saveEditNumBtn');
+
+        if (editByNumMenuBtn) {
+            editByNumMenuBtn.addEventListener('click', () => {
+                const plusMenu = document.getElementById('plusMenu');
+                if (plusMenu) plusMenu.classList.add('hidden'); 
+                
+                if(editNumInput) editNumInput.value = '';
+                if(editNumTextInput) editNumTextInput.value = '';
+                if(editNumErrorMsg) editNumErrorMsg.classList.add('hidden');
+                if(editByNumModal) editByNumModal.classList.remove('hidden');
+            });
+        }
+
+        function fetchExistingQA() {
+            if(!editNumInput || !editNumTextInput) return;
+            let targetNum = parseInt(editNumInput.value);
+            if (!targetNum || targetNum < 1) {
+                editNumTextInput.value = '';
+                return;
+            }
+            
+            let qaCounter = 0;
+            let targetItem = null;
+            
+            for (let i = 0; i < contentList.length; i++) {
+                if (contentList[i].type === 'qa') {
+                    qaCounter++;
+                    if (qaCounter === targetNum) {
+                        targetItem = contentList[i];
+                        break;
+                    }
+                }
+            }
+            
+            if (targetItem) {
+                if(editNumErrorMsg) editNumErrorMsg.classList.add('hidden');
+                let checkedRadio = document.querySelector('input[name="editQAType"]:checked');
+                let isQuestion = checkedRadio && checkedRadio.value === 'q';
+                editNumTextInput.value = isQuestion ? targetItem.q : targetItem.a;
+            } else {
+                editNumTextInput.value = '';
+            }
+        }
+
+        if(editNumInput) editNumInput.addEventListener('input', fetchExistingQA);
+        document.querySelectorAll('input[name="editQAType"]').forEach(radio => {
+            radio.addEventListener('change', fetchExistingQA);
+        });
+
+        if (cancelEditNumBtn) {
+            cancelEditNumBtn.addEventListener('click', () => {
+                if(editByNumModal) editByNumModal.classList.add('hidden');
+            });
+        }
+
+        if (saveEditNumBtn) {
+            saveEditNumBtn.addEventListener('click', () => {
+                if(!editNumInput || !editNumTextInput) return;
+                let targetNum = parseInt(editNumInput.value);
+                let newText = editNumTextInput.value.trim();
+                let checkedRadio = document.querySelector('input[name="editQAType"]:checked');
+                let isQuestion = checkedRadio && checkedRadio.value === 'q';
+                
+                if (!targetNum || targetNum < 1 || !newText) return;
+
+                let qaCounter = 0;
+                let foundIndex = -1;
+                
+                for (let i = 0; i < contentList.length; i++) {
+                    if (contentList[i].type === 'qa') {
+                        qaCounter++;
+                        if (qaCounter === targetNum) {
+                            foundIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundIndex !== -1) {
+                    if (typeof saveToUndoStack === 'function') saveToUndoStack();
+                    
+                    if (isQuestion) {
+                        contentList[foundIndex].q = newText;
+                    } else {
+                        contentList[foundIndex].a = newText;
+                    }
+                    
+                    if (typeof testFitAndRender === 'function') testFitAndRender(); 
+                    if (typeof window.saveCurrentSession === 'function') window.saveCurrentSession();
+                    
+                    if(editByNumModal) editByNumModal.classList.add('hidden');
+                    
+                    if (window.showToast) {
+                        window.showToast(`Q&A number ${targetNum} updated successfully!`, 'success');
+                    } else if (typeof appendAIMessage === 'function') {
+                        appendAIMessage(`Q&A নম্বর ${targetNum} সফলভাবে আপডেট করা হয়েছে।`);
+                    }
+                } else {
+                    if(editNumErrorMsg) editNumErrorMsg.classList.remove('hidden');
+                }
+            });
+        }
+
+        // ==========================================
+        // Save as Image / PDF Logic System
+        // ==========================================
+        
+        window.toggleSaveMenu = function(e) {
+            e.stopPropagation();
+            document.getElementById('topSaveMenu').classList.toggle('hidden');
+        };
+
+        document.addEventListener('click', (e) => {
+            let saveMenu = document.getElementById('topSaveMenu');
+            if (saveMenu && !saveMenu.classList.contains('hidden') && !saveMenu.contains(e.target)) {
+                saveMenu.classList.add('hidden');
+            }
+        });
+
+        window.openSaveImageModal = function() {
+            document.getElementById('topSaveMenu').classList.add('hidden');
+            if (!createdPageData) {
+                if (window.showToast) window.showToast('No page to save! Create a note first.', 'error');
+                return;
+            }
+            document.getElementById('saveImageModal').classList.remove('hidden');
+        };
+
+        window.closeSaveImageModal = function() {
+            document.getElementById('saveImageModal').classList.add('hidden');
+        };
+
+        window.openSavePdfModal = function() {
+            document.getElementById('topSaveMenu').classList.add('hidden');
+            if (!createdPageData) {
+                if (window.showToast) window.showToast('No page to save! Create a note first.', 'error');
+                return;
+            }
+            document.getElementById('savePdfModal').classList.remove('hidden');
+        };
+
+        window.closeSavePdfModal = function() {
+            document.getElementById('savePdfModal').classList.add('hidden');
+        };
+
+        window.handleSaveAction = function(type, action) {
+            const paper = document.getElementById('pagePaper');
+            if (!paper) return;
+
+            let scaleVal = 2; 
+            let formatExt = 'png';
+            let mimeType = 'image/png';
+
+            if (type === 'image') {
+                scaleVal = parseFloat(document.getElementById('imageQualitySelect').value);
+                formatExt = document.getElementById('imageFormatSelect').value;
+                if (formatExt === 'jpeg') mimeType = 'image/jpeg';
+                closeSaveImageModal();
+            } else if (type === 'pdf') {
+                closeSavePdfModal();
+                if (window.showToast) window.showToast('Processing Note Data...', 'success');
+            }
+
+            if (window.showToast) window.showToast(`Preparing ${action}... Please wait.`, 'success');
+
+            let wasHidden = paper.classList.contains('hidden');
+            if (wasHidden) paper.classList.remove('hidden');
+            
+            let tempZoom = typeof currentZoomLevel !== 'undefined' ? currentZoomLevel : 1.0;
+            if (tempZoom !== 1.0 && typeof applyZoom === 'function') {
+                currentZoomLevel = 1.0; applyZoom();
+            }
+
+            setTimeout(() => {
+                html2canvas(paper, { scale: scaleVal, useCORS: true }).then(canvas => {
+                    if (action === 'download') {
+                        let link = document.createElement('a');
+                        link.download = `Meta_AI_Note_${Date.now()}.${formatExt}`;
+                        link.href = canvas.toDataURL(mimeType, 1.0);
+                        link.click();
+                        if (window.showToast) window.showToast('Download complete!', 'success');
+                    } 
+                    else if (action === 'share') {
+                        canvas.toBlob((blob) => {
+                            const file = new File([blob], `Meta_AI_Note.${formatExt}`, { type: mimeType });
+                            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                navigator.share({
+                                    title: 'Meta AI Note',
+                                    text: 'Here is my note created using Meta AI Note Maker!',
+                                    files: [file]
+                                }).then(() => {
+                                    if (window.showToast) window.showToast('Shared successfully!', 'success');
+                                }).catch(err => console.log('Share canceled:', err));
+                            } else {
+                                if (window.showToast) window.showToast('Sharing not supported. Downloading instead...', 'error');
+                                let link = document.createElement('a');
+                                link.download = `Meta_AI_Note_${Date.now()}.${formatExt}`;
+                                link.href = URL.createObjectURL(blob);
+                                link.click();
+                            }
+                        }, mimeType, 1.0);
+                    }
+
+                    if (tempZoom !== 1.0 && typeof applyZoom === 'function') {
+                        currentZoomLevel = tempZoom; applyZoom();
+                    }
+                    if (wasHidden) paper.classList.add('hidden');
+
+                }).catch(err => {
+                    console.error("Export failed:", err);
+                    if (window.showToast) window.showToast('Failed to process image!', 'error');
+                });
+            }, 300);
+        };
+        </script>
+
+        <div id="saveImageModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
+            <div class="bg-white rounded-xl w-full max-w-[320px] shadow-2xl overflow-hidden flex flex-col">
+                <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h3 class="font-bold text-gray-800 text-[16px] flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        Export as Image
+                    </h3>
+                </div>
+                <div class="p-5 flex flex-col gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[14px] font-bold text-gray-700">Image Format:</label>
+                        <select id="imageFormatSelect" class="w-full border border-gray-200 rounded-lg p-2.5 text-[14px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                            <option value="png">PNG (High Quality)</option>
+                            <option value="jpeg">JPG (Smaller Size)</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[14px] font-bold text-gray-700">Quality / Dimension:</label>
+                        <select id="imageQualitySelect" class="w-full border border-gray-200 rounded-lg p-2.5 text-[14px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                            <option value="1">Standard (1x)</option>
+                            <option value="2" selected>Medium / HD (2x)</option>
+                            <option value="3">Ultra HD (3x)</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center mt-3 gap-2">
+                        <button onclick="closeSaveImageModal()" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium text-[14px] transition-colors w-1/3">Cancel</button>
+                        <button onclick="handleSaveAction('image', 'share')" class="px-3 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-semibold text-[14px] transition-colors w-1/3 flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            Share
+                        </button>
+                        <button onclick="handleSaveAction('image', 'download')" class="px-3 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-[14px] transition-colors shadow-lg shadow-green-600/30 w-1/3 flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="savePdfModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
+            <div class="bg-white rounded-xl w-full max-w-[320px] shadow-2xl overflow-hidden flex flex-col">
+                <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h3 class="font-bold text-gray-800 text-[16px] flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Export as PDF
+                    </h3>
+                </div>
+                <div class="p-5 flex flex-col gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[14px] font-bold text-gray-700">Page Size:</label>
+                        <select id="pdfSizeSelect" class="w-full border border-gray-200 rounded-lg p-2.5 text-[14px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                            <option value="a4">A4 (Standard)</option>
+                            <option value="actual">Actual Content Size</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[14px] font-bold text-gray-700">PDF Quality:</label>
+                        <select id="pdfQualitySelect" class="w-full border border-gray-200 rounded-lg p-2.5 text-[14px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                            <option value="standard">Standard (For Web/Share)</option>
+                            <option value="print">High Quality (For Print)</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center mt-3 gap-2">
+                        <button onclick="closeSavePdfModal()" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium text-[14px] transition-colors w-1/3">Cancel</button>
+                        <button onclick="handleSaveAction('pdf', 'share')" class="px-3 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-semibold text-[14px] transition-colors w-1/3 flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            Share
+                        </button>
+                        <button onclick="handleSaveAction('pdf', 'download')" class="px-3 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-[14px] transition-colors shadow-lg shadow-red-600/30 w-1/3 flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html>
