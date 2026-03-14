@@ -6,6 +6,7 @@
     <title>Meta AI Note Maker</title>
         <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
      
     <script>
 // ==========================================
@@ -3705,77 +3706,182 @@ profileBlock.innerHTML = `
             document.getElementById('savePdfModal').classList.add('hidden');
         };
 
-        window.handleSaveAction = function(type, action) {
+                        window.handleSaveAction = function(type, action) {
             const paper = document.getElementById('pagePaper');
+            const previewOverlay = document.getElementById('previewOverlay'); 
             if (!paper) return;
 
             let scaleVal = 2; 
             let formatExt = 'png';
             let mimeType = 'image/png';
+            
+            let pdfSize = 'a4';
+            let pdfQuality = 'standard';
 
             if (type === 'image') {
                 scaleVal = parseFloat(document.getElementById('imageQualitySelect').value);
                 formatExt = document.getElementById('imageFormatSelect').value;
                 if (formatExt === 'jpeg') mimeType = 'image/jpeg';
                 closeSaveImageModal();
-            } else if (type === 'pdf') {
+                      } else if (type === 'pdf') {
+                pdfSize = document.getElementById('pdfSizeSelect').value;
+                pdfQuality = document.getElementById('pdfQualitySelect').value;
+                // PDF-এর লেখা আরও HD রাখার জন্য Scale আরও বাড়ানো হলো (Standard=4x, Print=8x)
+                scaleVal = (pdfQuality === 'print') ? 8 : 4; 
+                formatExt = 'pdf';
+                mimeType = 'application/pdf';
                 closeSavePdfModal();
-                if (window.showToast) window.showToast('Processing Note Data...', 'success');
             }
 
-            if (window.showToast) window.showToast(`Preparing ${action}... Please wait.`, 'success');
+            if (window.showToast) window.showToast(`Processing your ${formatExt.toUpperCase()}... Please wait.`, 'success');
 
-            let wasHidden = paper.classList.contains('hidden');
-            if (wasHidden) paper.classList.remove('hidden');
+            // --- Parent ও Element কে সাময়িকভাবে ভিজিবল করা (ইউজারের চোখের আড়ালে) ---
+            let overlayWasHidden = previewOverlay.classList.contains('hidden');
+            let paperWasHidden = paper.classList.contains('hidden');
+
+            if (overlayWasHidden) {
+                previewOverlay.classList.remove('hidden');
+                previewOverlay.style.opacity = '0'; 
+                previewOverlay.style.position = 'absolute';
+                previewOverlay.style.zIndex = '-9999'; 
+            }
+            if (paperWasHidden) {
+                paper.classList.remove('hidden');
+            }
             
+            // জুম ঠিক করা
             let tempZoom = typeof currentZoomLevel !== 'undefined' ? currentZoomLevel : 1.0;
             if (tempZoom !== 1.0 && typeof applyZoom === 'function') {
                 currentZoomLevel = 1.0; applyZoom();
             }
 
             setTimeout(() => {
-                html2canvas(paper, { scale: scaleVal, useCORS: true }).then(canvas => {
-                    if (action === 'download') {
-                        let link = document.createElement('a');
-                        link.download = `Meta_AI_Note_${Date.now()}.${formatExt}`;
-                        link.href = canvas.toDataURL(mimeType, 1.0);
-                        link.click();
-                        if (window.showToast) window.showToast('Download complete!', 'success');
-                    } 
-                    else if (action === 'share') {
+                html2canvas(paper, { 
+                    scale: scaleVal, 
+                    useCORS: true, 
+                    allowTaint: true, 
+                    logging: false,
+                    onclone: function(clonedDoc) {
+                        // --- BUG FIX: Gradient Text html2canvas Fix ---
+                        // html2canvas background-clip: text সাপোর্ট করে না, তাই ডাউনলোড করার সময় Fallback কালার দেওয়া হলো
+                        const gradientClasses = [
+                            { cls: 'h-gradient', color: '#8b5cf6' },  
+                            { cls: 'h-gold', color: '#b38728' },      
+                            { cls: 'h-silver', color: '#737373' },    
+                            { cls: 'h-fire', color: '#ff0844' },      
+                            { cls: 'h-rainbow', color: '#0000ff' },   
+                            { cls: 'h-candy', color: '#ff9a9e' },     
+                            { cls: 'h-pink-grad', color: '#f5576c' }, 
+                            { cls: 'h-purple-grad', color: '#6c5ce7' }
+                        ];
+
+                                                gradientClasses.forEach(item => {
+                            const elements = clonedDoc.querySelectorAll('.' + item.cls);
+                            elements.forEach(el => {
+                                el.style.background = 'none'; 
+                                el.style.webkitTextFillColor = 'initial'; 
+                                el.style.color = item.color; 
+                                el.style.textShadow = 'none'; // স্যাডো সম্পূর্ণ মুছে ফেলা হলো
+                            });
+                        });
+                    }
+                }).then(canvas => {
+                    
+                    if (type === 'image') {
+                        let imgQuality = formatExt === 'jpeg' ? 0.9 : 1.0; 
                         canvas.toBlob((blob) => {
-                            const file = new File([blob], `Meta_AI_Note.${formatExt}`, { type: mimeType });
-                            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                                navigator.share({
-                                    title: 'Meta AI Note',
-                                    text: 'Here is my note created using Meta AI Note Maker!',
-                                    files: [file]
-                                }).then(() => {
-                                    if (window.showToast) window.showToast('Shared successfully!', 'success');
-                                }).catch(err => console.log('Share canceled:', err));
-                            } else {
-                                if (window.showToast) window.showToast('Sharing not supported. Downloading instead...', 'error');
-                                let link = document.createElement('a');
+                            if (!blob) throw new Error("Blob failed");
+                            
+                            if (action === 'download') {
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement('a');
                                 link.download = `Meta_AI_Note_${Date.now()}.${formatExt}`;
-                                link.href = URL.createObjectURL(blob);
+                                link.href = url;
+                                document.body.appendChild(link);
                                 link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(url); 
+                                if (window.showToast) window.showToast('Download complete!', 'success');
+                            } else if (action === 'share') {
+                                const file = new File([blob], `Meta_AI_Note.${formatExt}`, { type: mimeType });
+                                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                    navigator.share({
+                                        title: 'Meta AI Note',
+                                        files: [file]
+                                    }).then(() => {
+                                        if (window.showToast) window.showToast('Shared successfully!', 'success');
+                                    }).catch(err => console.log('Share canceled:', err));
+                                } else {
+                                    if (window.showToast) window.showToast('Direct share not supported. File downloaded!', 'success');
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.download = `Meta_AI_Note_${Date.now()}.${formatExt}`;
+                                    link.href = url;
+                                    link.click();
+                                    URL.revokeObjectURL(url);
+                                }
                             }
-                        }, mimeType, 1.0);
+                        }, mimeType, imgQuality);
+                        
+                    } else if (type === 'pdf') {
+                        try {
+                            const { jsPDF } = window.jspdf;
+                            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                            let pdf;
+                            
+                            if (pdfSize === 'a4') {
+                                pdf = new jsPDF('p', 'mm', 'a4');
+                                const pdfWidth = pdf.internal.pageSize.getWidth();
+                                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                            } else {
+                                const pxToMm = 0.264583;
+                                pdf = new jsPDF('p', 'mm', [canvas.width * pxToMm, canvas.height * pxToMm]);
+                                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width * pxToMm, canvas.height * pxToMm);
+                            }
+
+                            if (action === 'download') {
+                                pdf.save(`Meta_AI_Note_${Date.now()}.pdf`);
+                                if (window.showToast) window.showToast('PDF Download complete!', 'success');
+                            } else if (action === 'share') {
+                                const pdfBlob = pdf.output('blob');
+                                const file = new File([pdfBlob], `Meta_AI_Note_${Date.now()}.pdf`, { type: 'application/pdf' });
+                                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                    navigator.share({
+                                        title: 'Meta AI Note PDF',
+                                        files: [file]
+                                    }).then(() => {
+                                        if (window.showToast) window.showToast('Shared successfully!', 'success');
+                                    }).catch(err => console.log('Share canceled:', err));
+                                } else {
+                                    pdf.save(`Meta_AI_Note_${Date.now()}.pdf`);
+                                }
+                            }
+                        } catch (pdfErr) {
+                            console.error("PDF Export failed:", pdfErr);
+                            if (window.showToast) window.showToast('PDF error! Check if jsPDF library is loaded.', 'error');
+                        }
                     }
 
+                }).catch(err => {
+                    console.error("Canvas Export failed:", err);
+                    if (window.showToast) window.showToast('Process failed! Try Normal Quality.', 'error');
+                }).finally(() => {
+                    // --- Restore original states ---
                     if (tempZoom !== 1.0 && typeof applyZoom === 'function') {
                         currentZoomLevel = tempZoom; applyZoom();
                     }
-                    if (wasHidden) paper.classList.add('hidden');
-
-                }).catch(err => {
-                    console.error("Export failed:", err);
-                    if (window.showToast) window.showToast('Failed to process image!', 'error');
+                    if (paperWasHidden) paper.classList.add('hidden');
+                    if (overlayWasHidden) {
+                        previewOverlay.classList.add('hidden');
+                        previewOverlay.style.opacity = '';
+                        previewOverlay.style.position = '';
+                        previewOverlay.style.zIndex = '';
+                    }
                 });
-            }, 300);
+            }, 800); 
         };
         </script>
-
         <div id="saveImageModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 fade-in">
             <div class="bg-white rounded-xl w-full max-w-[320px] shadow-2xl overflow-hidden flex flex-col">
                 <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
@@ -3795,9 +3901,10 @@ profileBlock.innerHTML = `
                     <div class="flex flex-col gap-2">
                         <label class="text-[14px] font-bold text-gray-700">Quality / Dimension:</label>
                         <select id="imageQualitySelect" class="w-full border border-gray-200 rounded-lg p-2.5 text-[14px] text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                            <option value="1">Standard (1x)</option>
-                            <option value="2" selected>Medium / HD (2x)</option>
-                            <option value="3">Ultra HD (3x)</option>
+                            <option value="3">HD (3x) - Sharp</option>
+                            <option value="6" selected>Full HD (6x) - Very Sharp</option>
+                            <option value="9">2K Quality (9x) - Ultra Crisp</option>
+                            <option value="12">4K Quality (12x) - Maximum Detail</option>
                         </select>
                     </div>
                     <div class="flex justify-between items-center mt-3 gap-2">
